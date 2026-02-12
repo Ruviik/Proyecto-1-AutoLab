@@ -9,10 +9,14 @@ El objetivo es administrar una máquina virtual Ubuntu desde Windows mediante sc
 ---
 
 ## 🚦 Estado del Proyecto
-- [x] **Fase 0:** Configuración de Red y Git.
+- [x] **Fase 0:** Configuración de Red (Host-Only) y Git.
 - [x] **Fase 1:** Conexión SSH básica (Proof of Concept).
-- [ ] **Fase 2:** Estructura POO (Clases y Objetos).
-- [ ] **Fase 3:** Ejecución de comandos complejos.
+- [x] **Fase 2:** Estructura POO (Clases y Objetos) con sesión interactiva.
+- [ ] **Fase 3:** Automatización de tareas (Actualizaciones y Mantenimiento).
+
+## 📂 Estructura del Código
+- `src/ssh_manager.py`: Clase `SSHClient` que gestiona la conexión Paramiko.
+- `src/main.py`: Punto de entrada. Menú interactivo para controlar el servidor.
 
 ## 🛠️ Tecnologías
 - **Python 3.13**

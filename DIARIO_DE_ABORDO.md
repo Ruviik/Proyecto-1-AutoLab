@@ -102,3 +102,20 @@
   - Creado `src/ssh_manager.py`: Contiene la clase `SSHClient` (el "plano").
   - Creado `src/main.py`: Contiene la lógica principal y el bucle de usuario.
 - **Hito:** Lograda una shell interactiva donde la conexión SSH se reutiliza para múltiples comandos sin reconectar.
+
+- **Conceptos Aprendidos**
+
+    #### 1. Clases vs. Objetos (La Fábrica y el Robot)
+    - **Clase (`class`):** Es el **plano** o la plantilla. Define qué propiedades tendrá el robot (IP, usuario) y qué sabrá hacer (conectar, ejecutar). No ocupa memoria por sí sola.
+    - **Objeto (Instancia):** Es el **robot real** creado a partir del plano (`mi_servidor = SSHClient(...)`). Ocupa memoria y tiene vida propia.
+    - **`self`:** Es la forma en que el objeto se refiere a sí mismo. Permite que cada robot sepa *sus* propios datos sin mezclarlos con los de otros robots.
+
+    #### 2. Ciclo de Vida y Persistencia
+    - **Constructor (`__init__`):** El método que se ejecuta automáticamente al nacer el objeto. Lo usamos para guardar la configuración inicial.
+    - **Persistencia:** A diferencia del script lineal, al usar objetos podemos mantener la conexión SSH abierta (`self.client`) mientras el programa principal hace otras cosas (como esperar input del usuario en un bucle `while`).
+
+    #### 3. Modularidad
+    - Separamos el código en:
+    - **`ssh_manager.py`:** La herramienta técnica (el "cómo").
+    - **`main.py`:** La lógica de negocio y menú (el "qué" y "cuándo").
+    - Esto hace el código más limpio, fácil de leer y escalable.
