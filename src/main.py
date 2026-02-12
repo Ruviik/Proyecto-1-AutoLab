@@ -3,7 +3,7 @@ from ssh_manager import SSHClient
 
 # --- CONFIGURACIÓN ---
 # (En el futuro esto vendrá de un archivo seguro, por ahora hardcodeamos)
-HOST = "192.168.56.10"
+HOST = "IP_MÁQUINA"      # <--- PON LA IP DE LA MÁQUINA
 USER = "NOMBRE_USUARIO"      # <--- PON TU USUARIO
 PASS = "CONTRASEÑA"   # <--- PON TU CONTRASEÑA
 

@@ -97,7 +97,7 @@
 
 - **Fecha:** [12/02/2026]
 - **Objetivo:** Refactorizar el código usando Clases para mantener sesiones abiertas.
-- **Estado:** ✅ Completada.
+
 - **Cambios:**
   - Creado `src/ssh_manager.py`: Contiene la clase `SSHClient` (el "plano").
   - Creado `src/main.py`: Contiene la lógica principal y el bucle de usuario.
@@ -119,3 +119,29 @@
     - **`ssh_manager.py`:** La herramienta técnica (el "cómo").
     - **`main.py`:** La lógica de negocio y menú (el "qué" y "cuándo").
     - Esto hace el código más limpio, fácil de leer y escalable.
+
+## Fase 3: Automatización de Tareas (System Updater)
+- **Fecha:** [Tu fecha]
+- **Objetivo:** Crear un módulo capaz de actualizar el sistema operativo automáticamente.
+- **Estado:** ✅ Completada.
+- **Hito:** Ejecución exitosa de `apt update`, `upgrade` y `autoremove` inyectando la contraseña de `sudo` automáticamente.
+
+- **Conceptos Aprendidos**
+
+    1.  **Automatización de `sudo`:**
+        - Problema: `sudo` detiene el script esperando input manual.
+        - Solución: Usar `echo 'password' | sudo -S comando`. El flag `-S` le dice a sudo que lea la contraseña desde la "tubería" (stdin) y no del teclado.
+    2.  **Canales de Salida (`stderr` vs `stdout`):**
+        - Muchas herramientas de administración (como `sudo` o `apt`) envían avisos o prompts al canal de error (`stderr`) aunque funcionen bien. Es importante leer ambos canales en Python.
+    3.  **Seguridad (Lección pendiente):**
+        - Actualmente las contraseñas son visibles en los logs. Esto es una vulnerabilidad que se resolverá en futuras fases con Variables de Entorno.
+
+- **Seguridad y Sanitización del Repositorio**
+
+    - **Acción Crítica:** Eliminación retroactiva de credenciales (Hardcoded Passwords).
+    - **Problema:** Las contraseñas escritas en el código (`main.py`) quedaron registradas en commits anteriores, siendo accesibles en el historial de Git.
+    - **Solución Técnica:** Uso de la herramienta `git-filter-repo`.
+    - Se creó un archivo `replacements.txt` definiendo los patrones de texto sensible a eliminar.
+    - Se ejecutó el filtrado para barrer y reescribir **todo el historial de commits** del repositorio.
+    - Se añadió `replacements.txt` al `.gitignore` para evitar que las reglas de limpieza se suban al repositorio público.
+    - **Resultado:** El repositorio está ahora "limpio" y seguro para ser público, sin rastro de las claves originales en ninguna versión anterior.
