@@ -57,7 +57,6 @@
   - **Causa probable:** Interrupción del proceso de instalación de dependencias (pip) o bloqueo por parte del sistema/antivirus.
   - **Solución:** Borrar la carpeta corrupta y reintentar la creación.
 
----
 ## Fase 1: Conectividad SSH y Entornos Virtuales
 
 - **Fecha:** [12/02/2026]
@@ -93,3 +92,13 @@
     #### 4. GitHub (Remoto)
     - Vinculado el repositorio local con GitHub.
     - Primer `git push` realizado con éxito. El código ahora está respaldado en la nube.
+
+## Fase 2: Estructura POO y Sesión Interactiva
+
+- **Fecha:** [12/02/2026]
+- **Objetivo:** Refactorizar el código usando Clases para mantener sesiones abiertas.
+- **Estado:** ✅ Completada.
+- **Cambios:**
+  - Creado `src/ssh_manager.py`: Contiene la clase `SSHClient` (el "plano").
+  - Creado `src/main.py`: Contiene la lógica principal y el bucle de usuario.
+- **Hito:** Lograda una shell interactiva donde la conexión SSH se reutiliza para múltiples comandos sin reconectar.
