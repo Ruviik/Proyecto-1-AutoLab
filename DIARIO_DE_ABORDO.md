@@ -8,6 +8,8 @@
     - Repositorio Git iniciado.
     - VM Ubuntu Desktop instalada y configurada.
     - Red configurada: Host-Only IP 192.168.56.10.
+- **Estado:** ✅ Completada.
+
 - **Conceptos aprendidos:**
 
     ## Git (Control de Versiones)
@@ -54,3 +56,40 @@
   - **Consecuencia:** Carpeta `venv` creada pero incompleta (faltaba el script `activate`).
   - **Causa probable:** Interrupción del proceso de instalación de dependencias (pip) o bloqueo por parte del sistema/antivirus.
   - **Solución:** Borrar la carpeta corrupta y reintentar la creación.
+
+---
+## Fase 1: Conectividad SSH y Entornos Virtuales
+
+- **Fecha:** [12/02/2026]
+- **Objetivo:** Lograr que Python "hable" con la VM Ubuntu y ejecute comandos.
+- **Estado:** ✅ Completada.
+
+- **Conceptos aprendidos:**
+
+    #### 1. Entornos Virtuales (`venv`)
+    - **¿Qué es?:** Una "caja de herramientas" aislada para el proyecto.
+    - **¿Por qué?:** Evita mezclar librerías de distintos proyectos y romper el sistema operativo.
+    - **Comandos clave:**
+    - Crear: `python -m venv venv`
+    - Activar: `.\venv\Scripts\Activate` (Aparece `(venv)` en la terminal).
+    - **Importante:** La carpeta `venv` NUNCA se sube a Git (se añade al `.gitignore`).
+
+    #### 2. Librería `Paramiko` y SSH
+    - Python necesita la librería `paramiko` para gestionar conexiones SSH.
+    - **Flujo del script:**
+    1.  **Importar:** Traer la librería.
+    2.  **Cliente:** Crear el objeto "teléfono" (`client = paramiko.SSHClient()`).
+    3.  **Política:** Aceptar claves desconocidas automáticamente (evita el "yes/no" manual).
+    4.  **Conectar:** `client.connect(IP, usuario, pass)`.
+    5.  **Ejecutar:** `client.exec_command("comando")`.
+
+    #### 3. Los 3 Canales de Linux (Streams)
+    Al ejecutar un comando remoto, recibimos 3 flujos de datos:
+    - **`stdin`:** Entrada estándar (para enviar datos al comando).
+    - **`stdout`:** Salida estándar (la respuesta correcta).
+    - **`stderr`:** Salida de error (si algo falla).
+    *Es necesario leer (`read()`) y decodificar (`decode()`) estos flujos para ver texto legible.*
+
+    #### 4. GitHub (Remoto)
+    - Vinculado el repositorio local con GitHub.
+    - Primer `git push` realizado con éxito. El código ahora está respaldado en la nube.
