@@ -3,6 +3,7 @@ import sys
 from dotenv import load_dotenv
 from ssh_manager import SSHClient
 from system_updater import SystemUpdater
+from web_installer import WebInstaller
 
 load_dotenv()
 
@@ -16,37 +17,42 @@ if not all([HOST, USER, PASS]):
     sys.exit(1)
 
 def main():
-    # 1. CREAR EL OBJETO (Instanciación)
-    # Aquí es donde "rellenamos el formulario".
-    # Creamos una variable 'mi_servidor' que ES una instancia de SSHClient.
-    print("🤖 Inicializando el Asistente SSH...")
+    print("🤖 Inicializando AutoLab v2.0 (Apache Edition)...")
     mi_servidor = SSHClient(HOST, USER, PASS)
-
-    # 2. CONECTAR
-    # Le decimos a ESE objeto concreto que se conecte.
     mi_servidor.conectar()
 
-    # Si la conexión falló, la propiedad .client será None. Verificamos:
     if mi_servidor.client is None:
         print("❌ No se pudo establecer conexión. Abortando.")
         return
 
-    # 3. BUCLE DE COMANDOS (Interactividad)
-    # Como la conexión está abierta, podemos pedirle cosas repetidamente
-    while True:
-        comando = input("\n💻 Escribe un comando (Escribe 'salir' o 'exit' para cerrar ): ")
-        
-        if comando.lower() in ['salir', 'exit']:
-            break
-        
-        # Usamos el método de nuestro objeto para enviar la orden
-        respuesta = mi_servidor.ejecutar_comando(comando)
-        
-        print("--- RESPUESTA ---")
-        print(respuesta)
-        print("-----------------")
+    actualizador = SystemUpdater(mi_servidor, PASS)
+    instalador_web = WebInstaller(mi_servidor, PASS)
 
-    # 4. LIMPIEZA
+    while True:
+        # Menú visual
+        print("\n--- MENÚ DE CONTROL ---")
+        print("1. Ejecutar comando manual")
+        print("2. 🔄 ACTUALIZAR SISTEMA (Update + Upgrade + Autoremove)")
+        print("3. 🌐 Instalar Servidor Web (Apache)")
+        print("4. Salir")
+        
+        opcion = input("Selecciona una opción: ")
+
+        if opcion == "1":
+            cmd = input("Comando > ")
+            print(mi_servidor.ejecutar_comando(cmd))
+            
+        elif opcion == "2":
+            actualizador.actualizar_todo()
+            
+        elif opcion == "3":
+            instalador_web.instalar_stack_lamp()
+        
+        elif opcion == "4":
+            break
+        else:
+            print("Opción no válida.")
+
     mi_servidor.desconectar()
     print("👋 ¡Hasta luego!")
 
