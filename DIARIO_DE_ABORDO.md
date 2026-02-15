@@ -142,3 +142,37 @@ Al ejecutar un comando remoto, se gestionan 3 flujos:
 - **Solución Técnica:** Encapsulamiento en sub-shell:
   ```python
   echo password | sudo -S sh -c "echo 'contenido' > archivo"
+
+---
+
+## Fase 5: Portabilidad y Despliegue Universal (Cross-Platform)
+
+- **Fecha:** 15/02/2026
+- **Objetivo:** Convertir la herramienta en una aplicación "Portable" (Plug & Play) que funcione en Windows y Linux sin configuración manual previa.
+- **Estado:** ✅ Completada.
+
+### 📋 Avances
+- **Estandarización de Dependencias:** Creación de `requirements.txt` (`pip freeze`).
+- **Wizard de Configuración:** `main.py` ahora detecta si falta el archivo `.env` y lanza un asistente interactivo para crearlo automáticamente.
+- **Lanzadores Automáticos:**
+    - **Windows (`run_autolab.bat`):** Script Batch que crea el entorno, instala dependencias y lanza la app.
+    - **Linux (`run_autolab.sh`):** Script Bash con **auto-reparación**. Si detecta que falta `python3-venv`, solicita permisos `sudo` e instala el paquete automáticamente.
+- **Compatibilidad OS:** Uso de la librería `platform` en Python para alternar entre `cls` (Windows) y `clear` (Linux).
+
+### 🧠 Conceptos Aprendidos
+
+#### 1. Congelación de Dependencias (`pip freeze`)
+- Para que el proyecto funcione en otro PC, necesitamos una "lista de ingredientes" exacta.
+- Comando: `pip freeze > requirements.txt`.
+- Instalación: `pip install -r requirements.txt`.
+
+#### 2. Scripting de Automatización (Batch vs Bash)
+- **Batch (`.bat`):** Lenguaje nativo de Windows. Limitado pero funcional. Aprendimos a usar `cd /d "%~dp0"` para forzar la ruta relativa correcta.
+- **Bash (`.sh`):** Lenguaje nativo de Linux. Más potente. Permite lógica condicional compleja como detectar si un comando falla (`$?`) y ejecutar una reparación (`apt install`).
+
+#### 3. UX en Herramientas de Consola (CLI)
+- Una herramienta DevOps no debe romperse si falta configuración. Debe **guiar al usuario**.
+- Implementamos el patrón "Check & Ask": Si no existe configuración -> Preguntar -> Guardar -> Continuar.
+
+#### 4. Permisos de Ejecución en Linux
+- A diferencia de Windows, Linux requiere marcar explícitamente los scripts como ejecutables por seguridad: `chmod +x script.sh`.
