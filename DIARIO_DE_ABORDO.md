@@ -176,3 +176,26 @@ Al ejecutar un comando remoto, se gestionan 3 flujos:
 
 #### 4. Permisos de Ejecución en Linux
 - A diferencia de Windows, Linux requiere marcar explícitamente los scripts como ejecutables por seguridad: `chmod +x script.sh`.
+
+## Fase 5.1: Madurez del Software (Seguridad, UX y Portabilidad)
+
+- **Fecha:** 16/02/2026
+- **Objetivo:** Profesionalizar la herramienta mejorando la experiencia de usuario, la seguridad de las credenciales y la compatibilidad entre sistemas operativos.
+- **Estado:** ✅ Completada.
+
+### 📋 Avances
+1.  **Portabilidad Total:**
+    - Creación de `run_autolab.bat` (Windows) y `run_autolab.sh` (Linux).
+    - Implementación de **auto-reparación** en Linux: el script detecta si falta `python3-venv` y solicita permisos para instalarlo automáticamente.
+2.  **Seguridad (Security Hardening):**
+    - **Input Oculto:** Implementación de librería `getpass` para que las contraseñas no se vean al escribirlas.
+    - **Sanitización de Logs:** Corrección de una vulnerabilidad crítica donde la contraseña se mostraba en texto plano al ejecutar comandos `sudo`. Ahora el `ssh_manager.py` detecta estos patrones y los sustituye por `[PASSWORD OCULTA]` en la consola.
+3.  **Experiencia de Usuario (UX):**
+    - **Barra de Estado:** El menú ahora muestra permanentemente a qué servidor y usuario estamos conectados (`User@IP`).
+    - **Cambio de Host en Caliente:** Nueva opción en el menú para desconectar y conectar a otro servidor sin reiniciar el programa.
+    - **Flujo Limpio:** Uso de `cls`/`clear` y pausas estratégicas para que la terminal no se sature de texto.
+
+### 🧠 Lecciones Aprendidas
+- **Seguridad en Automatización:** Nunca se debe imprimir el comando crudo (`raw command`) si este contiene credenciales inyectadas mediante `echo | sudo -S`. Es vital filtrar los logs.
+- **Gestión de Estado:** Para cambiar de servidor sin cerrar el programa, es necesario reiniciar las instancias de las clases (`Updater`, `Installer`) con el nuevo objeto de conexión SSH.
+- **UX en Terminal:** Un menú estático que se limpia en cada iteración da una sensación mucho más profesional que un "scroll infinito".

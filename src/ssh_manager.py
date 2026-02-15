@@ -22,39 +22,50 @@ class SSHClient:
         try:
             # 1. Crear el objeto paramiko (la herramienta)
             self.client = paramiko.SSHClient()
-            
             # 2. Configurar la política de 'confiar en todos'
             self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            
             # 3. Llamar (usando los datos guardados en 'self')
             self.client.connect(self.ip, username=self.user, password=self.password)
-            print(f"✅ Conectado exitosamente a {self.ip}")
-            
+            return True
         except Exception as e:
-            print(f"❌ Error al conectar a {self.ip}: {e}")
+            print(f"❌ Error al conectar: {e}")
             self.client = None # Marcamos que no hay conexión válida
-
-    def ejecutar_comando(self, comando):
-        """Envía una orden y devuelve la respuesta limpia"""
-        if self.client is None:
-            print("⚠️ No estás conectado. Usa .conectar() primero.")
-            return None
-
-        print(f"🚀 Ejecutando: {comando}")
-        # Enviamos el comando y capturamos las 3 tuberías
-        stdin, stdout, stderr = self.client.exec_command(comando)
+            return False
         
-        # Leemos la respuesta y el error
-        respuesta = stdout.read().decode().strip()
-        errores = stderr.read().decode().strip()
-
-        if errores:
-            print(f"⚠️ El comando generó un error/aviso: {errores}")
-        
-        return respuesta
-
     def desconectar(self):
-        """Cierra la conexión para liberar recursos"""
         if self.client:
             self.client.close()
-            print(f"🔒 Conexión con {self.ip} cerrada.")
+            self.client = None
+
+    def ejecutar_comando(self, comando):
+        if not self.client:
+            return "❌ No hay conexión establecida."
+
+        log_comando = comando
+        if "echo" in comando and "sudo -S" in comando:
+            # Dividimos el comando por la tubería '|'
+            partes = comando.split('|')
+            if len(partes) > 1:
+                # Reconstruimos solo la parte derecha (el comando real)
+                # Ejemplo visual: "🚀 Ejecutando: [SUDO] sudo -S apt update"
+                log_comando = f"[PASSWORD OCULTA] | {partes[1].strip()}"
+        
+        print(f"🚀 Ejecutando: {log_comando}")
+        # -------------------------------------------
+
+        try:
+            stdin, stdout, stderr = self.client.exec_command(comando)
+            # sudo -S necesita la contraseña por stdin a veces, pero con el truco del 'echo'
+            # suele bastar. Sin embargo, paramiko a veces necesita vaciar buffers.
+            
+            salida = stdout.read().decode().strip()
+            error = stderr.read().decode().strip()
+
+            if error:
+                # Algunos comandos tiran warnings por stderr (como apt), no siempre es fallo crítico
+                print(f"⚠️  El comando generó un error/aviso: {error}")
+            
+            return salida
+
+        except Exception as e:
+            return f"❌ Error ejecutando comando: {e}"
