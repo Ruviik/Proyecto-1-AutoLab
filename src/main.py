@@ -1,11 +1,19 @@
 import os
+import sys
+from dotenv import load_dotenv
 from ssh_manager import SSHClient
+from system_updater import SystemUpdater
 
-# --- CONFIGURACIÓN ---
-# (En el futuro esto vendrá de un archivo seguro, por ahora hardcodeamos)
-HOST = "IP_MÁQUINA"      # <--- PON LA IP DE LA MÁQUINA
-USER = "NOMBRE_USUARIO"      # <--- PON TU USUARIO
-PASS = "CONTRASEÑA"   # <--- PON TU CONTRASEÑA
+load_dotenv()
+
+HOST = os.getenv("SSH_HOST")
+USER = os.getenv("SSH_USER")
+PASS = os.getenv("SSH_PASS")
+
+if not all([HOST, USER, PASS]):
+    print("❌ ERROR CRÍTICO: No se encontraron las credenciales en el archivo .env")
+    print("Asegúrate de haber creado el archivo .env con SSH_HOST, SSH_USER y SSH_PASS.")
+    sys.exit(1)
 
 def main():
     # 1. CREAR EL OBJETO (Instanciación)
