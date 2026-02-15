@@ -1,15 +1,38 @@
 import os
 import sys
-from dotenv import load_dotenv
-from ssh_manager import SSHClient
-from system_updater import SystemUpdater
-from web_installer import WebInstaller
+from dotenv import load_dotenv, set_key
 
-load_dotenv()
+def configurar_entorno():
+    env_file = ".env"
+
+    if os.path.exists(env_file):
+        load_dotenv()
+        return
+    
+    print("⚠️  No se ha detectado configuración previa.")
+    print("🔧 Iniciando asistente de configuración inicial...")
+
+    host = input("Introduzca la IP del servidor (ej: 192.168.56.10): ").strip()
+    user = input("Introduzca el Usuario SSH: ").strip()
+    password = input("Introduzca la Contraseña SSH: ").strip()
+
+    with open(env_file, "w") as f:
+        f.write(f"SSH_HOST={host}\n")
+        f.write(f"SSH_USER={user}\n")
+        f.write(f"SSH_PASS={password}\n")
+    
+    print(f"✅ Configuración guardada en '{env_file}'.")
+    load_dotenv()
+
+configurar_entorno()
 
 HOST = os.getenv("SSH_HOST")
 USER = os.getenv("SSH_USER")
 PASS = os.getenv("SSH_PASS")
+
+from ssh_manager import SSHClient
+from system_updater import SystemUpdater
+from web_installer import WebInstaller
 
 if not all([HOST, USER, PASS]):
     print("❌ ERROR CRÍTICO: No se encontraron las credenciales en el archivo .env")
