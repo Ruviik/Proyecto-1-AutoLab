@@ -9,8 +9,10 @@ try:
     from ssh_manager import SSHClient
     from system_updater import SystemUpdater
     from web_installer import WebInstaller
-except ImportError:
-    pass
+    from docker_manager import DockerManager 
+except ImportError as e:
+    print(f"❌ Error crítico importando módulos: {e}")
+    sys.exit(1)
 
 def limpiar_pantalla():
     sistema = platform.system()
@@ -67,13 +69,14 @@ def conectar_y_preparar(host, user, password):
 
 def main():
     limpiar_pantalla()
-    print("🤖 Inicializando AutoLab v2.1 (Multi-Host Edition)...")
+    print("🤖 Inicializando AutoLab v2.2 (Docker Edition)...")
 
     load_dotenv()
     host = os.getenv("SSH_HOST")
     user = os.getenv("SSH_USER")
     password = os.getenv("SSH_PASS")
     
+    # 1. Chequeo de configuración
     if not host or not user or not password:
         print("⚠️  No se ha detectado configuración previa.")
         host, user, password = solicitar_datos()
@@ -93,42 +96,95 @@ def main():
 
     while True:
         # Menú visual
-
         limpiar_pantalla()
+
+        # Si por algún motivo se perdió la conexión en el bucle anterior (reconect fallida)
+        if mi_servidor is None:
+            print("⚠️ No hay conexión activa. Por favor, selecciona la opción de reconectar o salir.")
+            estado_conn = "DESCONECTADO"
+        else:
+            estado_conn = f"{user}@{host}"
 
         # --- CABECERA DE ESTADO ---
         print("\n" + "="*50)
-        print(f"   🟢 CONECTADO A: {user}@{host}")
+        print(f"   🟢 CONECTADO A: {estado_conn}")
         print("="*50)
 
         print("\n--- MENÚ DE CONTROL ---")
         print("1. Ejecutar comando manual")
-        print("2. 🔄 ACTUALIZAR SISTEMA")
+        print("2. 🔄 Actualizar sistema")
         print("3. 🌐 Instalar Servidor Web (Apache + PHP)")
-        print("4. 🔌 Cambiar de Equipo (Reconectar)") # <--- NUEVA OPCIÓN
-        print("5. Salir")
+        print("4. 🐳 Gestión de Contenedores (Docker) [NUEVO]")
+        print("5. 🔌 Cambiar de Equipo (Reconectar)")
+        print("6. Salir")
         print("-" * 50)
         
         opcion = input("Selecciona una opción: ")
 
-        if opcion == "1":
+        if opcion == "1" and mi_servidor:
             cmd = input("Comando > ")
             resultado = mi_servidor.ejecutar_comando(cmd)
             print("\n--- RESULTADO ---")
             print(resultado)
-            input("\nPress Enter para continuar...") # Pausa para leer
+            input("\nPress Enter para continuar...") 
 
-        elif opcion == "2":
+        elif opcion == "2" and mi_servidor:
             actualizador.actualizar_todo()
             input("\nPress Enter para continuar...")
             
-        elif opcion == "3":
+        elif opcion == "3" and mi_servidor:
             instalador_web.instalar_stack_lamp()
             input("\nPress Enter para continuar...")
         
-        elif opcion == "4":
+        elif opcion == "4" and mi_servidor:
+            docker_mgr = DockerManager(mi_servidor, password)
+            
+            # Sub-bucle para el menú de Docker
+            while True:
+                limpiar_pantalla()
+                print("\n🐳 --- GESTIÓN DOCKER ---")
+                
+                # Comprobación rápida de estado
+                instalado = docker_mgr.comprobar_docker()
+                estado = "✅ INSTALADO" if instalado else "❌ NO INSTALADO"
+                print(f"Estado: {estado}\n")
+                
+                print("1. 🛠️  Instalar Docker Engine")
+                print("2. 📋 Listar Contenedores")
+                print("3. 🚀 Desplegar Nginx (Test Web)")
+                print("4. 🔙 Volver al menú principal")
+                print("-" * 30)
+                
+                sub_opcion = input("Docker > ")
+                
+                if sub_opcion == "1":
+                    if not instalado:
+                        docker_mgr.instalar_docker()
+                    else:
+                        print("ℹ️  Docker ya está instalado.")
+                    input("Enter para continuar...")
+                    
+                elif sub_opcion == "2":
+                    if instalado:
+                        docker_mgr.listar_contenedores()
+                    else:
+                        print("⚠️  Necesitas instalar Docker primero.")
+                    input("Enter para continuar...")
+                    
+                elif sub_opcion == "3":
+                    if instalado:
+                        docker_mgr.desplegar_nginx()
+                    else:
+                        print("⚠️  Necesitas instalar Docker primero.")
+                    input("Enter para continuar...")
+                    
+                elif sub_opcion == "4":
+                    break # Rompe el while del submenú y vuelve al principal
+        
+        elif opcion == "5":
             print("\n🔄 Cerrando conexión actual...")
-            mi_servidor.desconectar()
+            if mi_servidor:
+                mi_servidor.desconectar()
             
             # Pedimos nuevos datos
             host, user, password = solicitar_datos()
@@ -137,14 +193,14 @@ def main():
             mi_servidor, actualizador, instalador_web = conectar_y_preparar(host, user, password)
             
             if mi_servidor is None:
-                print("⚠️ La reconexión falló. Vuelve a intentar o sal.")
-                # El bucle while True continúa, pero las herramientas son None.
-                # Deberíamos manejar esto, pero por simplicidad volverá al menú.
+                print("⚠️ La reconexión falló.")
+                input("Enter para continuar...")
 
-        elif opcion == "5":
+        elif opcion == "6":
             break
         else:
-            print("⚠️ Opción no válida.")
+            print("⚠️ Opción no válida o sin conexión.")
+            time.sleep(1)
 
     if mi_servidor:
         mi_servidor.desconectar()
