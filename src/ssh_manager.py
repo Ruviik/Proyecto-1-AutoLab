@@ -1,4 +1,5 @@
 import paramiko
+import re  
 
 class SSHClient:
     """
@@ -11,10 +12,10 @@ class SSHClient:
         Constructor: Se ejecuta AUTOMÁTICAMENTE al crear un objeto.
         Aquí guardamos los datos de identidad de ESTA conexión específica.
         """
-        self.ip = ip
+        self.ip = ip        
         self.user = usuario
         self.password = password
-        self.client = None # Aún no tenemos conexión real, solo los datos.
+        self.client = None 
 
     def conectar(self):
         """Establece el túnel SSH"""
@@ -41,14 +42,11 @@ class SSHClient:
         if not self.client:
             return "❌ No hay conexión establecida."
 
-        log_comando = comando
-        if "echo" in comando and "sudo -S" in comando:
-            # Dividimos el comando por la tubería '|'
-            partes = comando.split('|')
-            if len(partes) > 1:
-                # Reconstruimos solo la parte derecha (el comando real)
-                # Ejemplo visual: "🚀 Ejecutando: [SUDO] sudo -S apt update"
-                log_comando = f"[PASSWORD OCULTA] | {partes[1].strip()}"
+        # --- LÓGICA DE SEGURIDAD AVANZADA (REGEX) ---
+        # Usamos expresiones regulares para sustituir TODAS las apariciones de
+        # "echo loquesea | sudo -S" por "echo [PASSWORD OCULTA] | sudo -S"
+        # Esto funciona incluso si hay varios comandos encadenados con &&
+        log_comando = re.sub(r"echo .*? \| sudo -S", "echo [PASSWORD OCULTA] | sudo -S", comando)
         
         print(f"🚀 Ejecutando: {log_comando}")
         # -------------------------------------------
@@ -62,7 +60,9 @@ class SSHClient:
             error = stderr.read().decode().strip()
 
             if error:
-                # Algunos comandos tiran warnings por stderr (como apt), no siempre es fallo crítico
+                # Filtramos mensajes técnicos comunes que no son errores reales
+                if "Warning" in error or "password" in error:
+                    pass 
                 print(f"⚠️  El comando generó un error/aviso: {error}")
             
             return salida

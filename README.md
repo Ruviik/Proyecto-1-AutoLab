@@ -4,24 +4,27 @@
 
 ## ✨ Características Principales
 
+### 🧩 Soporte Universal (Multi-Distro)
+* **Detección Inteligente:** El sistema identifica automáticamente si el servidor es **Debian/Ubuntu** (`apt`) o **RHEL/CentOS/Fedora** (`dnf`).
+* **Adaptación de Servicios:** Traduce automáticamente los nombres de paquetes y servicios (`apache2` ↔ `httpd`, `ufw` ↔ `firewalld`) según el entorno.
+
 ### 🛡️ Seguridad y Auditoría
 * **Gestión de Credenciales:** Uso de variables de entorno (`.env`) y ocultación de input (`getpass`).
-* **Sanitización de Logs:** Filtro inteligente que oculta contraseñas en la salida de consola durante la ejecución de comandos `sudo`.
+* **Sanitización Avanzada de Logs:** Filtro basado en **Regex** que elimina contraseñas en la consola incluso en comandos complejos o encadenados (`&&`).
 * **Conexión SSH:** Uso de `Paramiko` para canales seguros y persistentes.
 
 ### 🎮 Experiencia de Usuario (UX)
 * **Interfaz CLI Interactiva:** Menú limpio con barra de estado (`User@Host`).
 * **Multi-Host (Hot Swap):** Capacidad de cambiar de servidor objetivo sin reiniciar la aplicación.
-* **Feedback en Tiempo Real:** Visualización clara del progreso de actualizaciones e instalaciones.
+* **Feedback en Tiempo Real:** Visualización clara del progreso.
 
 ### ⚙️ Funcionalidades DevOps
-* **System Update:** Automatización de `apt update`, `upgrade` y `autoremove`.
-* **Web Stack Deployment:** Instalación desatendida de Apache2 y PHP.
+* **System Update:** Actualización automática del SO (soporta `apt upgrade` y `dnf update`).
+* **Web Stack Deployment:** Instalación desatendida de Stack LAMP (Apache/Httpd + PHP).
 * **Comandos Remotos:** Ejecución de comandos arbitrarios en el servidor.
 
 ### 🌍 Portabilidad (Windows & Linux)
-* **Zero-Config:** Scripts de lanzamiento automático que crean el entorno virtual (`venv`) e instalan dependencias.
-* **Auto-Reparación (Linux):** El lanzador detecta y corrige faltas de librerías del sistema automáticamente.
+* **Zero-Config:** Scripts de lanzamiento que configuran el entorno virtual (`venv`) automáticamente.
 
 ---
 
@@ -51,6 +54,7 @@ No necesitas instalar librerías manualmente. Los lanzadores lo hacen todo por t
 - [x] **Fase 2:** Estructura POO (Clases y Objetos) con sesión interactiva.
 - [x] **Fase 4:** Instalación de Servicios Web (Apache + PHP) y Variables de Entorno.
 - [x] **Fase 5:** Creación de launchers para mejorar portabilidad (Windows/Linux).
+- [x] Fase 6: Soporte Enterprise (RHEL/CentOS) y Hardening de Seguridad.
 
 ---
 
@@ -60,15 +64,15 @@ No necesitas instalar librerías manualmente. Los lanzadores lo hacen todo por t
 AutoLab/
 ├── src/                  # Código Fuente
 │   ├── main.py           # Punto de entrada y menú principal
-│   ├── ssh_manager.py    # Clase para gestión de conexión SSH
-│   ├── system_updater.py # Módulo de actualizaciones del SO
-│   └── web_installer.py  # Módulo de instalación Web (LAMP)
+│   ├── ssh_manager.py    # Cliente SSH con sanitización Regex
+│   ├── system_updater.py # Actualizador universal (APT/DNF)
+│   └── web_installer.py  # Instalador Web universal (Apache2/Httpd)
 ├── docs/                 # Documentación y Diarios
 │   └── DIARIO_DE_BORDO.md
-├── requirements.txt      # Lista de dependencias (pip)
-├── run_autolab.bat       # Lanzador automático para Windows
-├── run_autolab.sh        # Lanzador automático para Linux
-├── .gitignore            # Archivos excluidos del repo (.env, venv/)
+├── requirements.txt      # Dependencias (pip)
+├── run_autolab.bat       # Lanzador Windows
+├── run_autolab.sh        # Lanzador Linux
+├── .gitignore            # Archivos excluidos (.env, venv/)
 └── README.md             # Este archivo
 ```
 

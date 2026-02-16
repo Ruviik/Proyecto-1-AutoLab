@@ -103,7 +103,7 @@ def main():
 
         print("\n--- MENÚ DE CONTROL ---")
         print("1. Ejecutar comando manual")
-        print("2. 🔄 ACTUALIZAR SISTEMA (Update + Upgrade + Autoremove)")
+        print("2. 🔄 ACTUALIZAR SISTEMA")
         print("3. 🌐 Instalar Servidor Web (Apache + PHP)")
         print("4. 🔌 Cambiar de Equipo (Reconectar)") # <--- NUEVA OPCIÓN
         print("5. Salir")

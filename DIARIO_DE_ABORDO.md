@@ -199,3 +199,39 @@ Al ejecutar un comando remoto, se gestionan 3 flujos:
 - **Seguridad en Automatización:** Nunca se debe imprimir el comando crudo (`raw command`) si este contiene credenciales inyectadas mediante `echo | sudo -S`. Es vital filtrar los logs.
 - **Gestión de Estado:** Para cambiar de servidor sin cerrar el programa, es necesario reiniciar las instancias de las clases (`Updater`, `Installer`) con el nuevo objeto de conexión SSH.
 - **UX en Terminal:** Un menú estático que se limpia en cada iteración da una sensación mucho más profesional que un "scroll infinito".
+
+---
+
+## Fase 6: Soporte Enterprise (RHEL) y Hardening de Seguridad
+
+- **Fecha:** 16/02/2026
+- **Objetivo:** Ampliar la compatibilidad de la herramienta para soportar la familia Red Hat (RHEL, CentOS, Fedora) y solucionar vulnerabilidades críticas en el filtrado de logs.
+- **Estado:** ✅ Completada.
+
+### 📋 Avances
+1.  **Lógica Universal (Multi-Distro):**
+    - Implementación de detección de SO mediante lectura de `/etc/os-release`.
+    - **System Updater:** Ahora elige automáticamente entre `apt` (Debian) y `dnf` (RHEL) para actualizar el sistema.
+    - **Web Installer:** Adapta los nombres de paquetes y servicios dinámicamente:
+        - Debian/Ubuntu: `apache2`, `ufw`, `www-data`.
+        - RHEL/CentOS: `httpd`, `firewalld`, `apache`.
+2.  **Seguridad Avanzada (Regex):**
+    - **Problema Detectado:** La sanitización anterior (cortar por `|`) fallaba al encadenar comandos con `&&`, exponiendo la contraseña en la segunda parte del comando.
+    - **Solución:** Implementación de **Expresiones Regulares (`re`)** en `ssh_manager.py`. Ahora se busca el patrón `echo .*? | sudo -S` y se censura en todas sus apariciones dentro de una misma línea.
+3.  **Corrección de Bugs:**
+    - Se solucionó un error visual donde se imprimía el objeto de memoria (`<SSHClient object...>`) en lugar de la dirección IP al finalizar la instalación web.
+
+### 🧠 Conceptos Aprendidos
+
+#### 1. Diferencias entre Debian y RHEL
+El mundo Linux empresarial se divide principalmente en dos:
+- **Gestores de Paquetes:** `apt` vs `dnf` (o `yum`).
+- **Nombres de Servicios:** Es vital saber que Apache se llama `httpd` en RHEL.
+- **Firewalls:** `ufw` es sencillo, pero RHEL usa `firewalld` (`firewall-cmd`), que requiere recarga explícita (`--reload`) y persistencia (`--permanent`).
+
+#### 2. Expresiones Regulares (Regex)
+- El uso de `string.split()` es insuficiente para patrones complejos.
+- La librería `re` y el método `re.sub()` permiten realizar búsquedas y reemplazos "quirúrgicos" dentro de cadenas de texto, vital para ocultar secretos en logs de auditoría sin romper la funcionalidad del comando.
+
+#### 3. Depuración de Objetos
+- Importancia de diferenciar entre el objeto (`self.ssh`) y sus atributos (`self.ssh.ip`). Imprimir el objeto directamente devuelve su representación en memoria, lo cual no es útil para el usuario final.
