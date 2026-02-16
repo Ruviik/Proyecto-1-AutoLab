@@ -26,6 +26,10 @@
 ### 🌍 Portabilidad (Windows & Linux)
 * **Zero-Config:** Scripts de lanzamiento que configuran el entorno virtual (`venv`) automáticamente.
 
+### 🐳 Containerización (Docker)
+* **Gestión de Ciclo de Vida:** Instalación del motor Docker, despliegue de contenedores (Nginx) y visualización de estado.
+* **Formatos Personalizados:** Tablas de estado limpias y legibles integradas en la CLI.
+
 ---
 
 ## 🛠️ Instalación y Uso Rápido
@@ -54,7 +58,8 @@ No necesitas instalar librerías manualmente. Los lanzadores lo hacen todo por t
 - [x] **Fase 2:** Estructura POO (Clases y Objetos) con sesión interactiva.
 - [x] **Fase 4:** Instalación de Servicios Web (Apache + PHP) y Variables de Entorno.
 - [x] **Fase 5:** Creación de launchers para mejorar portabilidad (Windows/Linux).
-- [x] Fase 6: Soporte Enterprise (RHEL/CentOS) y Hardening de Seguridad.
+- [x] **Fase 6:** Soporte Enterprise (RHEL/CentOS) y Hardening de Seguridad.
+- [x] **Fase 7:** Implementación de DockerManager.
 
 ---
 
@@ -64,6 +69,7 @@ No necesitas instalar librerías manualmente. Los lanzadores lo hacen todo por t
 AutoLab/
 ├── src/                  # Código Fuente
 │   ├── main.py           # Punto de entrada y menú principal
+│   ├── docker_manager.py # Gestión de contenedores (Docker Engine)
 │   ├── ssh_manager.py    # Cliente SSH con sanitización Regex
 │   ├── system_updater.py # Actualizador universal (APT/DNF)
 │   └── web_installer.py  # Instalador Web universal (Apache2/Httpd)
@@ -80,7 +86,8 @@ AutoLab/
 
 ## 🛠️ Tecnologías
 - **Python 3.13**
-- **VirtualBox** (Ubuntu Desktop)
+- **Docker** (Motor de Contenedores)
+- **VirtualBox** (Ubuntu Desktop / RHEL)
 - **Git & GitHub**
 - **Paramiko** (Librería SSH)
 

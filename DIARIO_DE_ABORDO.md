@@ -235,3 +235,27 @@ El mundo Linux empresarial se divide principalmente en dos:
 
 #### 3. Depuración de Objetos
 - Importancia de diferenciar entre el objeto (`self.ssh`) y sus atributos (`self.ssh.ip`). Imprimir el objeto directamente devuelve su representación en memoria, lo cual no es útil para el usuario final.
+
+---
+
+## Fase 7: Containerización (Docker Integration)
+
+- **Fecha:** 16/02/2026
+- **Objetivo:** Implementar la gestión del ciclo de vida de contenedores Docker (Instalación, Listado y Despliegue).
+- **Estado:** ✅ Completada.
+
+### 📋 Avances
+1.  **Módulo `DockerManager`:**
+    - Detecta si Docker está instalado. Si no, lo instala automáticamente (Soporte Multi-Distro).
+    - Capacidad de **Listar Contenedores** activos mediante `docker ps`.
+    - Capacidad de **Desplegar Servicios** (Nginx) con mapeo de puertos (`8080:80`).
+2.  **Resolución de Conflictos de Sintaxis:**
+    - **El problema de las llaves:** Python usa `{}` para sus *f-strings*, y Docker usa `{{}}` para su formato de salida.
+    - **La solución:** Escapado de caracteres. Para enviar `{{.ID}}` a través de Python, tuvimos que escribir `{{{{.ID}}}}`.
+3.  **UX Mejorada:**
+    - Submenú específico para gestión de Docker dentro de la aplicación principal.
+
+### 🧠 Conceptos Aprendidos
+- **Docker Engine:** El motor que permite correr aplicaciones en entornos aislados.
+- **Port Mapping (`-p host:container`):** Cómo exponer un servicio que corre "dentro" de la red de Docker hacia el mundo exterior (la red del host).
+- **Immutabilidad:** A diferencia de instalar Apache directamente, desplegar un contenedor Nginx es limpio; si lo borras, no quedan residuos en el sistema operativo.
